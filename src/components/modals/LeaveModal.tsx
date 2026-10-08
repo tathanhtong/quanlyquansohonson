@@ -20,10 +20,11 @@ const COMMON_REASONS = [
 ];
 
 const COMMON_APPROVERS = [
-  'Trung tá Trần Đình Trọng - Đồn trưởng',
-  'Trung tá Lê Hoàng Nam - Chính trị viên',
-  'Thiếu tá Hoàng Quốc Việt - Phó Đồn trưởng',
-  'Thiếu tá QNCN Phạm Minh Đức - Chính trị viên phó',
+  'Trung tá Võ Thanh Vàng - Đồn trưởng',
+  'Trung tá Nguyễn Nguyên Bá - Chính trị viên',
+  'Thrung tá Lâm Anh Đoàn - Phó Đồn trưởng QS',
+  'Thrung tá Trần Văn Diện - Phó Đồn trưởng NV',
+  'Đại uý Lê Thanh Nhàn - Chính trị viên phó',
 ];
 
 export const LeaveModal: React.FC<LeaveModalProps> = ({
@@ -253,7 +254,7 @@ export const LeaveModal: React.FC<LeaveModalProps> = ({
                 }`}
               >
                 <Clock className="w-4 h-4 text-amber-200" />
-                <span>TRANH THỦ (Cuối tuần, việc gia đình...)</span>
+                <span>ĐI TRANH THỦ (Cuối tuần, việc gia đình...)</span>
               </button>
             </div>
           </div>
