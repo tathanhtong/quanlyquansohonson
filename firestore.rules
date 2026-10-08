@@ -1,0 +1,132 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net: default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Hardened Global Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isInitialAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'tathanhtong@gmail.com'
+      );
+    }
+
+    function hasUserDoc() {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isUserActive() {
+      return isInitialAdmin() || (isSignedIn() && hasUserDoc() && getUserData().active == true);
+    }
+
+    function isAdmin() {
+      return isInitialAdmin() || (isUserActive() && getUserData().role == 'admin');
+    }
+
+    function isEditor() {
+      return isAdmin() || (isUserActive() && (getUserData().role == 'editor' || getUserData().role == 'admin'));
+    }
+
+    // Users Collection (RBAC)
+    match /users/{userId} {
+      // User can read own document; Admin can read/list all users. Viewer and Editor cannot list all users.
+      allow get: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow list: if isAdmin();
+      // Self registration: initial admin registers as admin, others as viewer (active: false pending approval), or admin manages users
+      allow create: if (isAdmin()) || (
+        isSignedIn() && request.auth.uid == userId && (
+          (isInitialAdmin() && request.resource.data.role == 'admin' && request.resource.data.active == true) ||
+          (request.resource.data.role == 'viewer' && request.resource.data.active == false)
+        )
+      );
+      // Admin can update anything (activate/deactivate, change role); user can update self profile without escalating privileges
+      allow update: if (isAdmin()) || (
+        isSignedIn() && request.auth.uid == userId &&
+        request.resource.data.role == resource.data.role &&
+        request.resource.data.active == resource.data.active
+      );
+      allow delete: if isAdmin() && request.auth.uid != userId;
+    }
+
+    // Soldiers Collection
+    match /soldiers/{soldierId} {
+      allow read: if isUserActive();
+      allow create, update: if isEditor() && isValidId(soldierId);
+      allow delete: if isAdmin();
+    }
+
+    // Commendations Collection
+    match /commendations/{commendationId} {
+      allow read: if isUserActive();
+      allow create, update: if isEditor() && isValidId(commendationId);
+      allow delete: if isAdmin();
+    }
+
+    // Reprimands Collection
+    match /reprimands/{reprimandId} {
+      allow read: if isUserActive();
+      allow create, update: if isEditor() && isValidId(reprimandId);
+      allow delete: if isAdmin();
+    }
+
+    // Rewards Collection
+    match /rewards/{rewardId} {
+      allow read: if isUserActive();
+      allow create, update: if isEditor() && isValidId(rewardId);
+      allow delete: if isAdmin();
+    }
+
+    // Leaves Collection (Đi phép & Tranh thủ)
+    match /leaves/{leaveId} {
+      allow read: if isUserActive();
+      allow create, update: if isEditor() && isValidId(leaveId);
+      allow delete: if isAdmin();
+    }
+
+    // Monthly Evaluations Collection
+    match /evaluations/{evalId} {
+      allow read: if isUserActive();
+      allow create, update: if isEditor() && isValidId(evalId);
+      allow delete: if isAdmin();
+    }
+
+    // Audit Logs Collection (Append-only by active users, uid and email must match caller)
+    match /auditLogs/{logId} {
+      allow read: if isUserActive();
+      allow create: if isUserActive() && isValidId(logId) &&
+        request.resource.data.uid == request.auth.uid &&
+        (!('email' in request.resource.data) || request.resource.data.email == '' || request.resource.data.email == request.auth.token.email);
+      allow update: if false; // Immutable
+      allow delete: if isAdmin();
+    }
+
+    // Settings Collection (unitInfo & system settings: read for active users, write for Admin only)
+    match /settings/{settingId} {
+      allow read: if isUserActive();
+      allow create, update: if isAdmin() && isValidId(settingId);
+      allow delete: if isAdmin();
+    }
+
+    // Admins Collection (Backward compatibility)
+    match /admins/{adminId} {
+      allow read: if isUserActive();
+      allow write: if isAdmin();
+    }
+  }
+}

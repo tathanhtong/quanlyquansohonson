@@ -1,0 +1,227 @@
+{
+  "entities": {
+    "Soldier": {
+      "title": "Soldier",
+      "description": "Quân nhân thuộc biên chế Đồn Biên phòng Hòn Sơn",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "stt": { "type": "number" },
+        "fullName": { "type": "string" },
+        "rank": { "type": "string" },
+        "position": { "type": "string" },
+        "department": { "type": "string" },
+        "birthDate": { "type": "string" },
+        "status": { "type": "string" },
+        "notes": { "type": "string" },
+        "phoneNumber": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" },
+        "createdBy": { "type": "string" },
+        "updatedBy": { "type": "string" }
+      },
+      "required": ["id", "fullName", "rank", "position", "department"]
+    },
+    "Commendation": {
+      "title": "Commendation",
+      "description": "Bản ghi biểu dương cán bộ, chiến sĩ trong tuần/tháng/năm",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "soldierId": { "type": "string" },
+        "fullName": { "type": "string" },
+        "rank": { "type": "string" },
+        "position": { "type": "string" },
+        "department": { "type": "string" },
+        "date": { "type": "string" },
+        "weekNumber": { "type": "number" },
+        "month": { "type": "number" },
+        "year": { "type": "number" },
+        "content": { "type": "string" },
+        "achievement": { "type": "string" },
+        "proposedBy": { "type": "string" },
+        "commendationType": { "type": "string" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "soldierId", "fullName", "weekNumber", "month", "year", "content"]
+    },
+    "Reprimand": {
+      "title": "Reprimand",
+      "description": "Bản ghi phê bình, nhắc nhở cán bộ, chiến sĩ",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "soldierId": { "type": "string" },
+        "fullName": { "type": "string" },
+        "rank": { "type": "string" },
+        "position": { "type": "string" },
+        "department": { "type": "string" },
+        "date": { "type": "string" },
+        "weekNumber": { "type": "number" },
+        "month": { "type": "number" },
+        "year": { "type": "number" },
+        "content": { "type": "string" },
+        "defectCause": { "type": "string" },
+        "reprimandType": { "type": "string" },
+        "remediationPlan": { "type": "string" },
+        "reviewedBy": { "type": "string" },
+        "remediationStatus": { "type": "string" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "soldierId", "fullName", "weekNumber", "month", "year", "content"]
+    },
+    "Reward": {
+      "title": "Reward",
+      "description": "Khen thưởng danh hiệu thi đua, bằng khen, giấy khen",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "soldierId": { "type": "string" },
+        "fullName": { "type": "string" },
+        "rank": { "type": "string" },
+        "position": { "type": "string" },
+        "department": { "type": "string" },
+        "rewardType": { "type": "string" },
+        "achievement": { "type": "string" },
+        "decisionNumber": { "type": "string" },
+        "decisionDate": { "type": "string" },
+        "decisionLevel": { "type": "string" },
+        "year": { "type": "number" },
+        "month": { "type": "number" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "soldierId", "fullName", "rewardType", "decisionNumber", "year"]
+    },
+    "LeaveRecord": {
+      "title": "LeaveRecord",
+      "description": "Quân số đi phép và tranh thủ",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "soldierId": { "type": "string" },
+        "fullName": { "type": "string" },
+        "rank": { "type": "string" },
+        "position": { "type": "string" },
+        "department": { "type": "string" },
+        "category": { "type": "string" },
+        "leaveType": { "type": "string" },
+        "startDate": { "type": "string" },
+        "endDate": { "type": "string" },
+        "daysCount": { "type": "number" },
+        "destination": { "type": "string" },
+        "reason": { "type": "string" },
+        "approver": { "type": "string" },
+        "licenseNumber": { "type": "string" },
+        "actualReturnDate": { "type": "string" },
+        "status": { "type": "string" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "soldierId", "fullName", "category", "leaveType", "startDate", "endDate", "status"]
+    },
+    "MonthlyEvaluation": {
+      "title": "MonthlyEvaluation",
+      "description": "Nhận xét, đánh giá kết quả thi đua báo cáo tháng hoặc năm",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "month": { "type": "number" },
+        "year": { "type": "number" },
+        "generalReview": { "type": "string" },
+        "advantages": { "type": "string" },
+        "disadvantages": { "type": "string" },
+        "solutions": { "type": "string" },
+        "reporterName": { "type": "string" },
+        "reporterPosition": { "type": "string" },
+        "commanderName": { "type": "string" },
+        "commanderPosition": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["month", "year"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "Nhật ký hoạt động hệ thống",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "user": { "type": "string" },
+        "action": { "type": "string" },
+        "targetType": { "type": "string" },
+        "details": { "type": "string" }
+      },
+      "required": ["id", "timestamp", "user", "action", "details"]
+    },
+    "Setting": {
+      "title": "Setting",
+      "description": "Cấu hình đơn vị và hệ thống",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "unitName": { "type": "string" },
+        "parentUnit": { "type": "string" },
+        "superiorUnit": { "type": "string" },
+        "stationLocation": { "type": "string" },
+        "migratedAt": { "type": "string" },
+        "migratedBy": { "type": "string" }
+      }
+    },
+    "AppUser": {
+      "title": "AppUser",
+      "description": "Tài khoản người dùng và phân quyền RBAC",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "editor", "viewer"] },
+        "active": { "type": "boolean" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["uid", "email", "role", "active"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "AppUser",
+      "description": "Phân quyền tài khoản người dùng"
+    },
+    "/soldiers/{soldierId}": {
+      "schema": "Soldier",
+      "description": "Danh sách quân số biên chế Đồn BP Hòn Sơn"
+    },
+    "/commendations/{commendationId}": {
+      "schema": "Commendation",
+      "description": "Bản ghi biểu dương theo tuần/tháng/năm"
+    },
+    "/reprimands/{reprimandId}": {
+      "schema": "Reprimand",
+      "description": "Bản ghi phê bình theo tuần/tháng/năm"
+    },
+    "/rewards/{rewardId}": {
+      "schema": "Reward",
+      "description": "Bản ghi khen thưởng"
+    },
+    "/leaves/{leaveId}": {
+      "schema": "LeaveRecord",
+      "description": "Bản ghi quân số đi phép và tranh thủ"
+    },
+    "/evaluations/{evalId}": {
+      "schema": "MonthlyEvaluation",
+      "description": "Đánh giá, nhận xét báo cáo định kỳ"
+    },
+    "/auditLogs/{logId}": {
+      "schema": "AuditLog",
+      "description": "Nhật ký hoạt động của đơn vị"
+    },
+    "/settings/{settingId}": {
+      "schema": "Setting",
+      "description": "Cài đặt đơn vị và cấu hình hệ thống"
+    }
+  }
+}

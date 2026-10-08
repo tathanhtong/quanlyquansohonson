@@ -1,0 +1,6 @@
+{
+  "name": "Đồn Biên phòng Hòn Sơn - Theo dõi Biểu dương, Khen thưởng, Phê bình",
+  "description": "Hệ thống quản lý, theo dõi biểu dương, khen thưởng, phê bình cán bộ, chiến sĩ Đồn Biên phòng Hòn Sơn chuyên nghiệp, chính quy.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
