@@ -79,10 +79,10 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="bg-emerald-950/90 border-b border-emerald-800/60 px-4 py-1 flex items-center justify-between text-xs text-amber-200/90 font-medium">
         <div className="flex items-center space-x-2 tracking-wide">
           <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-          <span className="hidden sm:inline">BỘ TƯ LỆNH BĐBP &bull; BĐBP TỈNH KIÊN GIANG</span>
-          <span className="sm:hidden font-semibold">BĐBP KIÊN GIANG</span>
+          <span className="hidden sm:inline">TÒNG CYBER &bull; ZALO: 0939909468</span>
+          <span className="sm:hidden font-semibold">BAN CHỈ HUY BỘ ĐỘI BIÊN PHÒNG TỈNH AN GIANG</span>
           <span className="text-emerald-400">|</span>
-          <span className="text-emerald-200">Xã đảo Lại Sơn, Kiên Hải</span>
+          <span className="text-emerald-200">ấp Bãi Nhà A, Đặc khu Kiên Hải</span>
         </div>
 
         {/* Real-time Clock, Cloud Sync & User Profile */}

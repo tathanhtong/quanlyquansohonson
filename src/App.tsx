@@ -17,6 +17,7 @@ import {
   deleteReprimand,
   deleteReward,
   deleteSoldier,
+  deleteAllSoldiers,
   exportLeavesToExcel,
   exportToExcel,
   fetchAllFromFirestore,
@@ -339,6 +340,32 @@ export default function App() {
           }
         } catch (err: any) {
           showToast('Lỗi xóa quân nhân: ' + (err?.message || 'Thao tác thất bại'));
+          throw err;
+        }
+      },
+    });
+  };
+
+  const handleDeleteAllSoldiers = () => {
+    if (currentUserProfile?.role !== 'admin') {
+      showToast('Chỉ Quản trị viên mới có quyền xóa toàn bộ danh sách quân số!');
+      return;
+    }
+    setDeleteModalConfig({
+      isOpen: true,
+      title: 'Xóa toàn bộ danh sách quân số',
+      message:
+        'Bạn có chắc chắn muốn xóa toàn bộ danh sách cán bộ, chiến sĩ?\n\nThao tác này cũng sẽ xóa toàn bộ biểu dương, phê bình, khen thưởng và đi phép/tranh thủ liên quan.\n\nThao tác không thể hoàn tác.',
+      itemName: `Toàn bộ ${db.soldiers.length} cán bộ, chiến sĩ`,
+      onConfirm: async () => {
+        try {
+          await deleteAllSoldiers();
+          showToast('Đã xóa toàn bộ danh sách quân số.');
+          if (viewingSoldierProfile) {
+            setViewingSoldierProfile(null);
+          }
+        } catch (err: any) {
+          showToast('Lỗi xóa quân số: ' + (err?.message || 'Thao tác thất bại'));
           throw err;
         }
       },
@@ -864,6 +891,8 @@ export default function App() {
               onAddSoldier={handleOpenAddSoldier}
               onEditSoldier={handleOpenEditSoldier}
               onDeleteSoldier={handleDeleteSoldier}
+              onDeleteAllSoldiers={handleDeleteAllSoldiers}
+              isAdmin={currentUserProfile?.role === 'admin'}
               onSelectSoldier={setViewingSoldierProfile}
               onExportExcel={handleExportExcelGeneral}
               onOpenImportModal={() => setImportModalOpen(true)}

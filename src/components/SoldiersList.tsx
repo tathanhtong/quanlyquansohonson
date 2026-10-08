@@ -24,6 +24,8 @@ interface SoldiersListProps {
   onAddSoldier: () => void;
   onEditSoldier: (soldier: Soldier) => void;
   onDeleteSoldier: (soldier: Soldier) => void;
+  onDeleteAllSoldiers: () => void;
+  isAdmin: boolean;
   onSelectSoldier: (soldier: Soldier) => void;
   onExportExcel: () => void;
   onOpenImportModal: () => void;
@@ -34,6 +36,8 @@ export const SoldiersList: React.FC<SoldiersListProps> = ({
   onAddSoldier,
   onEditSoldier,
   onDeleteSoldier,
+  onDeleteAllSoldiers,
+  isAdmin,
   onSelectSoldier,
   onExportExcel,
   onOpenImportModal,
@@ -124,6 +128,16 @@ export const SoldiersList: React.FC<SoldiersListProps> = ({
             <FileSpreadsheet className="w-4 h-4 text-emerald-700" />
             <span>Xuất Excel</span>
           </button>
+
+          {isAdmin && (
+            <button
+              onClick={onDeleteAllSoldiers}
+              className="flex items-center space-x-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 font-semibold text-xs rounded-lg border border-red-300 transition-colors"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span>Xóa tất cả</span>
+            </button>
+          )}
 
           <button
             onClick={onAddSoldier}

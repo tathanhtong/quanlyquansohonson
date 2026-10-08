@@ -947,6 +947,47 @@ export async function deleteSoldier(id: string): Promise<void> {
   }
 }
 
+export async function deleteAllSoldiers(): Promise<void> {
+  checkUserPermission('admin');
+  setSyncStatus('SAVING');
+  try {
+    const soldierCount = memoryDb.soldiers ? memoryDb.soldiers.length : 0;
+    if (soldierCount === 0 && (!memoryDb.commendations || memoryDb.commendations.length === 0)) {
+      setSyncStatus('SAVED');
+      return;
+    }
+
+    if (auth.currentUser) {
+      await clearFirestoreCollections([
+        'soldiers',
+        'commendations',
+        'reprimands',
+        'rewards',
+        'leaves',
+      ]);
+    }
+
+    memoryDb.soldiers = [];
+    memoryDb.commendations = [];
+    memoryDb.reprimands = [];
+    memoryDb.rewards = [];
+    memoryDb.leaves = [];
+
+    saveToLocalCache(memoryDb);
+
+    await addAuditLog(
+      'XÓA',
+      'Quân số',
+      'Xóa toàn bộ danh sách quân số và dữ liệu nghiệp vụ liên quan'
+    );
+    setSyncStatus('SAVED');
+  } catch (err) {
+    console.error('deleteAllSoldiers failed:', err);
+    setSyncStatus('ERROR');
+    throw err;
+  }
+}
+
 export async function importSoldiersBatch(
   newSoldiers: Array<{
     stt?: number;
