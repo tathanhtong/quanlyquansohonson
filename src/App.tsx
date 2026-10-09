@@ -701,13 +701,14 @@ export default function App() {
           <div className="bg-gradient-to-r from-emerald-950 via-emerald-900 to-emerald-950 p-8 text-white">
             <BorderGuardBadge size={64} className="mx-auto mb-3 hover:scale-105 transition-transform" />
             <span className="text-xs font-semibold px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 tracking-widest uppercase">
-              Quân đội Nhân dân Việt Nam &bull; BĐBP Kiên Giang
+              BAN CHỈ HUY BỘ ĐỘI BIÊN PHÒNG TỈNH An Giang
             </span>
             <h2 className="text-xl font-bold uppercase tracking-wider text-amber-400 font-serif mt-2.5">
               ĐỒN BIÊN PHÒNG HÒN SƠN
             </h2>
             <p className="text-xs text-emerald-100 mt-1 tracking-wide">
-              HỆ THỐNG THEO DÕI BIỂU DƯƠNG – KHEN THƯỞNG – PHÊ BÌNH
+              HỆ THỐNG THEO DÕI
+              BIỂU DƯƠNG – KHEN THƯỞNG – PHÊ BÌNH
             </p>
           </div>
 
