@@ -72,7 +72,7 @@ export interface Soldier {
 }
 
 export type CommendationType =
-  | 'Biểu dương trước toàn đồn'
+  | 'Biểu dương trước đơn vị'
   | 'Biểu dương trong giao ban tuần'
   | 'Biểu dương trên bảng tin thi đua'
   | 'Biểu dương đột xuất trong thực hiện nhiệm vụ'
@@ -100,7 +100,7 @@ export interface Commendation {
 
 export type ReprimandType =
   | 'Nhắc nhở tại giao ban tuần'
-  | 'Phê bình trước toàn đồn'
+  | 'Phê bình trước đơn vị'
   | 'Kiểm điểm trước cấp ủy, chỉ huy đội/trạm'
   | 'Kiểm điểm trước chi bộ'
   | 'Hạ bậc xếp loại thi đua tuần'

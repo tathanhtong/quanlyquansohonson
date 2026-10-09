@@ -91,9 +91,13 @@ export default function App() {
   const [authLoading, setAuthLoading] = useState<boolean>(true);
   const [syncStatus, setSyncStatus] = useState<SyncStatus>(getSyncStatus());
 
-  // Period state: default to September 2026
-  const [selectedMonth, setSelectedMonth] = useState<number>(9);
-  const [selectedYear, setSelectedYear] = useState<number>(2026);
+  // Period state: default to current real local month/year
+  const [selectedMonth, setSelectedMonth] = useState<number>(
+    () => new Date().getMonth() + 1
+  );
+  const [selectedYear, setSelectedYear] = useState<number>(
+    () => new Date().getFullYear()
+  );
 
   // Active navigation tab
   const [currentTab, setCurrentTab] = useState<NavTab>('dashboard');
@@ -716,7 +720,7 @@ export default function App() {
                 Yêu cầu xác thực tài khoản đơn vị
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
-                Hệ thống dữ liệu quân số, biểu dương, phê bình và đi phép đã được đồng bộ trực tuyến lên cơ sở dữ liệu đám mây Firebase Cloud Firestore. Cán bộ quản lý vui lòng đăng nhập bằng tài khoản Google để tải và cập nhật số liệu.
+                Dữ liệu quân số, biểu dương, phê bình và đi phép đã được đồng bộ trên hệ thống đám mây. Vui lòng đăng nhập Google để xem và cập nhật dữ liệu.
               </p>
             </div>
 
@@ -726,13 +730,13 @@ export default function App() {
                 className="inline-flex items-center space-x-2.5 px-6 py-3.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 active:scale-95 text-white font-bold text-sm shadow-md transition-all cursor-pointer"
               >
                 <LogIn className="w-5 h-5 text-amber-300" />
-                <span>Đăng nhập bằng tài khoản Google</span>
+                <span>Đồng chí hãy Đăng nhập bằng tài khoản Google</span>
               </button>
             </div>
 
             <div className="text-xs text-slate-500 border-t border-slate-100 pt-4 flex items-center justify-center gap-1.5">
               <ShieldCheck className="w-4 h-4 text-emerald-700" />
-              <span>Cơ sở dữ liệu an toàn &bull; Phân quyền bảo mật theo quy định</span>
+              <span>Cơ sở dữ liệu an toàn &bull; Tác giả: Tạ Thanh Tòng</span>
             </div>
           </div>
         </div>
@@ -750,7 +754,7 @@ export default function App() {
           <div className="bg-gradient-to-r from-emerald-950 via-emerald-900 to-emerald-950 p-8 text-white">
             <BorderGuardBadge size={64} className="mx-auto mb-3" />
             <span className="text-xs font-semibold px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 tracking-widest uppercase">
-              Quân đội Nhân dân Việt Nam &bull; BĐBP Kiên Giang
+              Quân đội Nhân dân Việt Nam &bull; BĐBP An Giang
             </span>
             <h2 className="text-xl font-bold uppercase tracking-wider text-amber-400 font-serif mt-2.5">
               ĐỒN BIÊN PHÒNG HÒN SƠN
