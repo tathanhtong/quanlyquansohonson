@@ -76,19 +76,19 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="bg-gradient-to-r from-emerald-950 via-emerald-900 to-emerald-950 text-white shadow-xl border-b-2 border-amber-500/40 sticky top-0 z-30">
       {/* Top Banner Ribbon */}
-      <div className="bg-emerald-950/90 border-b border-emerald-800/60 px-4 py-1 flex items-center justify-between text-xs text-amber-200/90 font-medium">
-        <div className="flex items-center space-x-2 tracking-wide">
-          <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+      <div className="bg-emerald-950/90 border-b border-emerald-800/60 px-2 sm:px-4 py-1 flex items-center justify-between text-xs text-amber-200/90 font-medium">
+        <div className="flex items-center space-x-1.5 sm:space-x-2 tracking-wide truncate max-w-[55%] sm:max-w-none">
+          <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0"></span>
           <span className="hidden sm:inline">TÒNG CYBER &bull; ZALO: 0939909468</span>
-          <span className="sm:hidden font-semibold">BAN CHỈ HUY BỘ ĐỘI BIÊN PHÒNG TỈNH AN GIANG</span>
-          <span className="text-emerald-400">|</span>
-          <span className="text-emerald-200">ấp Bãi Nhà A, Đặc khu Kiên Hải</span>
+          <span className="sm:hidden font-semibold truncate text-[11px]">BĐBP AN GIANG</span>
+          <span className="text-emerald-400 hidden xs:inline">|</span>
+          <span className="text-emerald-200 hidden xs:inline truncate">ấp Bãi Nhà A, Đặc khu Kiên Hải</span>
         </div>
 
         {/* Real-time Clock, Cloud Sync & User Profile */}
-        <div className="flex items-center space-x-3 text-emerald-100">
+        <div className="flex items-center space-x-2 sm:space-x-3 text-emerald-100 shrink-0">
           {/* Sync Status Badge */}
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-900/80 border border-emerald-700/60 text-[11px] font-sans">
+          <div className="flex items-center gap-1.5 px-1.5 sm:px-2 py-0.5 rounded bg-emerald-900/80 border border-emerald-700/60 text-[10px] sm:text-[11px] font-sans">
             {syncStatus === 'SAVED' && (
               <>
                 <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
@@ -179,41 +179,41 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Main Header Bar */}
-      <div className="px-4 py-3 sm:px-6 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div className="px-3 py-2 sm:px-6 sm:py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-2.5 sm:gap-3">
         {/* Left: Emblem & Unit Brand */}
-        <div className="flex items-center space-x-3.5">
+        <div className="flex items-center space-x-2.5 sm:space-x-3.5">
           <button
             onClick={onToggleMobileMenu}
-            className="lg:hidden p-2 rounded-lg bg-emerald-800/80 hover:bg-emerald-700 text-amber-300 transition-colors focus:outline-none"
-            aria-label="Mở menu"
+            className="lg:hidden p-2 rounded-lg bg-emerald-800/80 hover:bg-emerald-700 active:bg-emerald-600 text-amber-300 transition-colors focus:outline-none shrink-0"
+            aria-label="Mở menu điều hướng"
           >
             <Menu className="w-5 h-5" />
           </button>
 
-          <BorderGuardBadge size={48} className="hover:scale-105 transition-transform" />
+          <BorderGuardBadge size={44} className="hover:scale-105 transition-transform shrink-0" />
 
-          <div>
+          <div className="min-w-0">
             <div className="flex items-center space-x-2">
-              <span className="text-xs font-semibold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 tracking-widest uppercase">
+              <span className="text-[10px] sm:text-xs font-semibold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 tracking-widest uppercase truncate">
                 Quân đội Nhân dân Việt Nam
               </span>
             </div>
-            <h1 className="text-lg sm:text-xl font-extrabold text-amber-400 tracking-wide uppercase font-serif drop-shadow-sm leading-tight mt-0.5">
+            <h1 className="text-base sm:text-xl font-extrabold text-amber-400 tracking-wide uppercase font-serif drop-shadow-sm leading-tight mt-0.5 truncate">
               ĐỒN BIÊN PHÒNG HÒN SƠN
             </h1>
-            <p className="text-xs sm:text-sm font-medium text-emerald-100 tracking-normal text-balance">
+            <p className="text-[11px] sm:text-sm font-medium text-emerald-100 tracking-normal text-balance line-clamp-1 sm:line-clamp-none">
               HỆ THỐNG THEO DÕI BIỂU DƯƠNG – KHEN THƯỞNG – PHÊ BÌNH
             </p>
           </div>
         </div>
 
         {/* Right: Period Selector & Quick Actions */}
-        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 self-end md:self-center">
+        <div className="flex flex-wrap items-center justify-between sm:justify-start gap-2 sm:gap-3 w-full md:w-auto self-stretch md:self-center">
           {/* Month / Year Selector Badge */}
           <div className="flex items-center bg-emerald-800/90 border border-amber-500/30 rounded-lg p-1 shadow-inner text-xs sm:text-sm">
-            <div className="flex items-center px-2 py-1 text-amber-300 font-semibold gap-1">
+            <div className="flex items-center px-1.5 sm:px-2 py-1 text-amber-300 font-semibold gap-1 text-[11px] sm:text-xs">
               <Calendar className="w-3.5 h-3.5" />
-              <span>Thời gian:</span>
+              <span className="hidden xs:inline">Thời gian:</span>
             </div>
 
             {/* Month Select */}
@@ -221,7 +221,7 @@ export const Header: React.FC<HeaderProps> = ({
               <select
                 value={selectedMonth}
                 onChange={(e) => onMonthChange(Number(e.target.value))}
-                className="bg-emerald-950 text-white font-medium text-xs sm:text-sm py-1 pl-2.5 pr-6 rounded border border-emerald-700 hover:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400 appearance-none cursor-pointer"
+                className="bg-emerald-950 text-white font-medium text-xs sm:text-sm py-1 pl-2 sm:pl-2.5 pr-5 sm:pr-6 rounded border border-emerald-700 hover:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400 appearance-none cursor-pointer"
               >
                 {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
                   <option key={m} value={m} className="bg-emerald-950 text-white">
@@ -239,7 +239,7 @@ export const Header: React.FC<HeaderProps> = ({
               <select
                 value={selectedYear}
                 onChange={(e) => onYearChange(Number(e.target.value))}
-                className="bg-emerald-950 text-white font-medium text-xs sm:text-sm py-1 pl-2.5 pr-6 rounded border border-emerald-700 hover:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400 appearance-none cursor-pointer"
+                className="bg-emerald-950 text-white font-medium text-xs sm:text-sm py-1 pl-2 sm:pl-2.5 pr-5 sm:pr-6 rounded border border-emerald-700 hover:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400 appearance-none cursor-pointer"
               >
                 {availableYears.map((y) => (
                   <option key={y} value={y} className="bg-emerald-950 text-white">
@@ -251,25 +251,27 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          {/* Quick Action: Add Commendation */}
-          <button
-            onClick={onOpenAddCommendation}
-            className="flex items-center space-x-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white rounded-lg font-semibold text-xs sm:text-sm shadow-md transition-all border border-emerald-400/40"
-            title="Thêm mới biểu dương trong tuần"
-          >
-            <PlusCircle className="w-4 h-4 text-amber-300" />
-            <span>+ Biểu dương</span>
-          </button>
+          <div className="flex items-center gap-1.5 sm:gap-2 ml-auto md:ml-0">
+            {/* Quick Action: Add Commendation */}
+            <button
+              onClick={onOpenAddCommendation}
+              className="flex items-center space-x-1 sm:space-x-1.5 px-2.5 sm:px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white rounded-lg font-semibold text-xs sm:text-sm shadow-md transition-all border border-emerald-400/40"
+              title="Thêm mới biểu dương trong tuần"
+            >
+              <PlusCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-300" />
+              <span>+ Biểu dương</span>
+            </button>
 
-          {/* Quick Action: Add Reprimand */}
-          <button
-            onClick={onOpenAddReprimand}
-            className="flex items-center space-x-1.5 px-3 py-1.5 bg-rose-800 hover:bg-rose-700 active:scale-95 text-white rounded-lg font-semibold text-xs sm:text-sm shadow-md transition-all border border-rose-400/30"
-            title="Thêm mới phê bình, nhắc nhở"
-          >
-            <AlertTriangle className="w-4 h-4 text-amber-300" />
-            <span>+ Phê bình</span>
-          </button>
+            {/* Quick Action: Add Reprimand */}
+            <button
+              onClick={onOpenAddReprimand}
+              className="flex items-center space-x-1 sm:space-x-1.5 px-2.5 sm:px-3 py-1.5 bg-rose-800 hover:bg-rose-700 active:scale-95 text-white rounded-lg font-semibold text-xs sm:text-sm shadow-md transition-all border border-rose-400/30"
+              title="Thêm mới phê bình, nhắc nhở"
+            >
+              <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-300" />
+              <span>+ Phê bình</span>
+            </button>
+          </div>
         </div>
       </div>
     </header>

@@ -284,11 +284,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </button>
           </div>
 
-          <div className="grid grid-cols-5 gap-2 sm:gap-3 py-6">
+          <div className="flex sm:grid sm:grid-cols-5 gap-2 sm:gap-3 py-4 sm:py-6 overflow-x-auto pb-3 sm:pb-6">
             {weeks.map((w) => (
               <div
                 key={w.week}
-                className="flex flex-col items-center bg-slate-50 rounded-xl p-3 border border-slate-200/80 hover:border-emerald-400 transition-colors"
+                className="min-w-[100px] sm:min-w-0 flex-1 flex flex-col items-center bg-slate-50 rounded-xl p-2.5 sm:p-3 border border-slate-200/80 hover:border-emerald-400 transition-colors"
               >
                 <span className="text-xs font-bold text-slate-700 mb-2 uppercase">
                   Tuần {w.week}

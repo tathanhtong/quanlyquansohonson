@@ -141,7 +141,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Sidebar Container */}
       <aside
-        className={`fixed lg:sticky top-0 lg:top-[98px] left-0 h-screen lg:h-[calc(100vh-98px)] w-64 bg-slate-900 text-slate-200 border-r border-slate-800 z-50 lg:z-10 flex flex-col justify-between transition-transform duration-300 ease-in-out ${
+        className={`fixed lg:sticky top-0 lg:top-[98px] left-0 h-screen lg:h-[calc(100vh-98px)] w-[min(82vw,300px)] lg:w-64 bg-slate-900 text-slate-200 border-r border-slate-800 z-50 lg:z-10 flex flex-col justify-between transition-transform duration-300 ease-in-out ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >

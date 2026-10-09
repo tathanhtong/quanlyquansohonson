@@ -149,39 +149,39 @@ export const SoldierProfileModal: React.FC<SoldierProfileModalProps> = ({
   if (!soldier) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 sm:p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-2 sm:p-4 overflow-y-auto">
       <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full my-auto overflow-hidden border border-slate-200 animate-in fade-in zoom-in duration-200 flex flex-col max-h-[92vh]">
         {/* Modal Top Banner */}
-        <div className="bg-gradient-to-r from-emerald-950 via-emerald-900 to-emerald-950 text-white p-5 flex items-start justify-between border-b-2 border-amber-500/40">
-          <div className="flex items-center space-x-3.5">
-            <div className="w-14 h-14 rounded-xl bg-emerald-800/80 border-2 border-amber-400 flex items-center justify-center text-amber-300 font-bold text-xl shadow-md">
+        <div className="bg-gradient-to-r from-emerald-950 via-emerald-900 to-emerald-950 text-white p-3.5 sm:p-5 flex items-start justify-between border-b-2 border-amber-500/40 shrink-0 gap-2">
+          <div className="flex items-center space-x-2.5 sm:space-x-3.5 min-w-0">
+            <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-xl bg-emerald-800/80 border-2 border-amber-400 flex items-center justify-center text-amber-300 font-bold text-lg sm:text-xl shadow-md shrink-0">
               {soldier.fullName.trim().split(' ').slice(-1)[0]?.charAt(0) || 'Đ'}
             </div>
 
-            <div>
-              <div className="flex items-center space-x-2">
-                <span className="text-xs font-bold px-2 py-0.5 rounded bg-amber-400/20 text-amber-300 border border-amber-400/30">
+            <div className="min-w-0">
+              <div className="flex items-center space-x-1.5 sm:space-x-2">
+                <span className="text-[10px] sm:text-xs font-bold px-1.5 sm:px-2 py-0.5 rounded bg-amber-400/20 text-amber-300 border border-amber-400/30 truncate">
                   {soldier.rank}
                 </span>
-                <span className="text-xs text-emerald-200 font-medium">
+                <span className="text-[10px] sm:text-xs text-emerald-200 font-medium truncate">
                   {soldier.status}
                 </span>
               </div>
 
-              <h2 className="text-xl sm:text-2xl font-bold font-serif text-white tracking-wide uppercase mt-0.5">
+              <h2 className="text-base sm:text-2xl font-bold font-serif text-white tracking-wide uppercase mt-0.5 truncate">
                 {soldier.fullName}
               </h2>
 
-              <p className="text-xs sm:text-sm text-emerald-100">
+              <p className="text-[11px] sm:text-sm text-emerald-100 truncate">
                 <strong>{soldier.position}</strong> &bull; {soldier.department}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1 sm:space-x-2 shrink-0">
             <button
               onClick={handleExportWord}
-              className="p-2 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-amber-300 text-xs font-semibold flex items-center gap-1.5 transition-colors border border-emerald-600"
+              className="p-1.5 sm:p-2 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-amber-300 text-xs font-semibold flex items-center gap-1.5 transition-colors border border-emerald-600"
               title="Xuất file Word trích lục hồ sơ"
             >
               <FileDown className="w-4 h-4" />
@@ -190,7 +190,7 @@ export const SoldierProfileModal: React.FC<SoldierProfileModalProps> = ({
 
             <button
               onClick={onClose}
-              className="p-2 rounded-lg text-slate-300 hover:text-white hover:bg-emerald-900 transition-colors"
+              className="p-1.5 sm:p-2 rounded-lg text-slate-300 hover:text-white hover:bg-emerald-900 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>

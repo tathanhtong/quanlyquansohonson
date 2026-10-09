@@ -165,33 +165,33 @@ export const LeaveModal: React.FC<LeaveModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full my-auto overflow-hidden border border-slate-200 animate-in fade-in zoom-in duration-150">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full my-auto overflow-hidden border border-slate-200 animate-in fade-in zoom-in duration-150 flex flex-col max-h-[92vh]">
         {/* Modal Header */}
-        <div className="bg-gradient-to-r from-emerald-950 via-emerald-900 to-emerald-950 text-white px-6 py-4 flex items-center justify-between border-b-2 border-amber-500/50">
-          <div className="flex items-center space-x-2.5">
-            <div className="p-2 rounded-lg bg-emerald-800 text-amber-400 border border-amber-500/30">
-              <CalendarCheck className="w-5 h-5" />
+        <div className="bg-gradient-to-r from-emerald-950 via-emerald-900 to-emerald-950 text-white px-4 py-3 sm:px-6 sm:py-4 flex items-center justify-between border-b-2 border-amber-500/50 shrink-0">
+          <div className="flex items-center space-x-2 sm:space-x-2.5">
+            <div className="p-1.5 sm:p-2 rounded-lg bg-emerald-800 text-amber-400 border border-amber-500/30">
+              <CalendarCheck className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div>
-              <h3 className="text-base sm:text-lg font-bold font-serif text-amber-400 uppercase tracking-wide">
+              <h3 className="text-sm sm:text-lg font-bold font-serif text-amber-400 uppercase tracking-wide">
                 {itemToEdit ? 'Chỉnh sửa lượt đi phép / tranh thủ' : 'Đăng ký lượt đi phép / tranh thủ'}
               </h3>
-              <p className="text-xs text-emerald-200">
+              <p className="text-[11px] sm:text-xs text-emerald-200 line-clamp-1 sm:line-clamp-none">
                 Quản lý quân số vắng mặt, bảo đảm quân số trực SSCĐ tại Đồn BP Hòn Sơn
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-emerald-300 hover:text-white hover:bg-emerald-800/80 transition-colors"
+            className="p-1.5 rounded-lg text-emerald-300 hover:text-white hover:bg-emerald-800/80 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Modal Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[82vh] overflow-y-auto">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-3.5 sm:space-y-4 overflow-y-auto">
           {/* Soldier Selector */}
           <div>
             <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">

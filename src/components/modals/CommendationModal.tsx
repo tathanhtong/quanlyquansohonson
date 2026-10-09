@@ -128,26 +128,26 @@ export const CommendationModal: React.FC<CommendationModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full my-auto overflow-hidden border border-slate-200 animate-in fade-in zoom-in duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-2 sm:p-4 overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full my-auto overflow-hidden border border-slate-200 animate-in fade-in zoom-in duration-150 flex flex-col max-h-[92vh]">
         {/* Header */}
-        <div className="bg-emerald-950 text-white p-4 flex items-center justify-between border-b border-amber-500/40">
+        <div className="bg-emerald-950 text-white p-3.5 sm:p-4 flex items-center justify-between border-b border-amber-500/40 shrink-0">
           <div className="flex items-center space-x-2">
             <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
-            <h3 className="font-bold text-base">
+            <h3 className="font-bold text-sm sm:text-base">
               {itemToEdit ? 'Chỉnh sửa biểu dương' : 'Thêm mới biểu dương cán bộ, chiến sĩ'}
             </h3>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-300 hover:text-white hover:bg-emerald-900"
+            className="p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-emerald-900 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-5 space-y-4 text-xs sm:text-sm max-h-[85vh] overflow-y-auto">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-5 space-y-3.5 sm:space-y-4 text-xs sm:text-sm overflow-y-auto">
           {/* Select Soldier */}
           <div>
             <label className="block font-bold text-slate-700 mb-1">
