@@ -71,7 +71,7 @@ export const Header: React.FC<HeaderProps> = ({
     hour12: false,
   });
 
-  const availableYears = [2024, 2025, 2026, 2027, 2028];
+  const availableYears = [2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033];
 
   return (
     <header className="bg-gradient-to-r from-emerald-950 via-emerald-900 to-emerald-950 text-white shadow-xl border-b-2 border-amber-500/40 sticky top-0 z-30">
