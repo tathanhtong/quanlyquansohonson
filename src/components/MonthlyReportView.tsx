@@ -12,6 +12,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import {
+  Commander,
   Commendation,
   LeaveRecord,
   MonthlyReportEvaluation,
@@ -33,6 +34,7 @@ interface MonthlyReportViewProps {
   month: number;
   year: number;
   soldiers: Soldier[];
+  commanders?: Commander[];
   commendations: Commendation[];
   reprimands: Reprimand[];
   rewards: Reward[];
@@ -51,6 +53,7 @@ export const MonthlyReportView: React.FC<MonthlyReportViewProps> = ({
   month,
   year,
   soldiers,
+  commanders = [],
   commendations,
   reprimands,
   rewards,
@@ -601,12 +604,43 @@ export const MonthlyReportView: React.FC<MonthlyReportViewProps> = ({
                 </div>
 
                 <div>
-                  <label className="font-semibold text-slate-700 block mb-0.5">Chỉ huy phê duyệt:</label>
+                  <div className="flex items-center justify-between mb-0.5">
+                    <label className="font-semibold text-slate-700 block">Chỉ huy phê duyệt:</label>
+                    {commanders.length > 0 && (
+                      <span className="text-[10px] text-emerald-700 font-semibold">(Ban Chỉ huy)</span>
+                    )}
+                  </div>
+                  {commanders.length > 0 && (
+                    <select
+                      onChange={(e) => {
+                        const selected = commanders.find((c) => c.id === e.target.value);
+                        if (selected) {
+                          setEvaluation({
+                            ...evaluation,
+                            commanderName: `${selected.rank} ${selected.fullName}`,
+                            commanderPosition: selected.position,
+                          });
+                        }
+                      }}
+                      defaultValue=""
+                      className="w-full p-1 border border-emerald-300 bg-emerald-50 rounded text-[11px] mb-1.5 text-emerald-950 font-semibold cursor-pointer"
+                    >
+                      <option value="" disabled>
+                        -- Chọn nhanh từ Ban Chỉ huy --
+                      </option>
+                      {commanders.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.rank} {c.fullName} - {c.position}
+                        </option>
+                      ))}
+                    </select>
+                  )}
                   <input
                     type="text"
                     value={evaluation.commanderName}
                     onChange={(e) => setEvaluation({ ...evaluation, commanderName: e.target.value })}
                     className="w-full p-1.5 border border-slate-300 rounded text-xs"
+                    placeholder="Họ và tên chỉ huy..."
                   />
                   <input
                     type="text"

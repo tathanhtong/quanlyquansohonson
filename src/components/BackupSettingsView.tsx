@@ -14,6 +14,14 @@ import {
   UserCheck,
   UserX,
   Lock,
+  Award,
+  ArrowUp,
+  ArrowDown,
+  Edit2,
+  Plus,
+  Save,
+  X,
+  Check,
 } from 'lucide-react';
 import {
   clearAllData,
@@ -21,13 +29,16 @@ import {
   exportDatabaseToJson,
   exportToExcel,
   getAppUsers,
+  getCommanders,
   loadDatabase,
   resetToSampleData,
   restoreDatabaseFromJson,
+  saveCommanders,
   updateAppUserRole,
   updateUnitInfo,
 } from '../services/storage';
-import { AppUser, UserRole } from '../types';
+import { AppUser, Commander, UserRole } from '../types';
+import { MILITARY_RANKS } from '../constants/ranksAndDepartments';
 
 interface BackupSettingsViewProps {
   unitInfo: {
@@ -36,6 +47,7 @@ interface BackupSettingsViewProps {
     superiorUnit: string;
     stationLocation: string;
   };
+  commanders?: Commander[];
   currentUserProfile?: AppUser | null;
   onToast: (msg: string) => void;
   onRefreshData: () => void;
@@ -43,6 +55,7 @@ interface BackupSettingsViewProps {
 
 export const BackupSettingsView: React.FC<BackupSettingsViewProps> = ({
   unitInfo,
+  commanders,
   currentUserProfile,
   onToast,
   onRefreshData,
@@ -53,6 +66,31 @@ export const BackupSettingsView: React.FC<BackupSettingsViewProps> = ({
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingText, setProcessingText] = useState('');
+
+  // Commanders management state
+  const [commandersList, setCommandersList] = useState<Commander[]>(() => {
+    if (commanders && commanders.length > 0) return commanders;
+    return getCommanders();
+  });
+  const [isSavingCommanders, setIsSavingCommanders] = useState(false);
+  const [newRank, setNewRank] = useState<string>('Trung tá');
+  const [newName, setNewName] = useState<string>('');
+  const [newPosition, setNewPosition] = useState<string>('Đồn trưởng');
+
+  // Edit commander state
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editRank, setEditRank] = useState<string>('');
+  const [editName, setEditName] = useState<string>('');
+  const [editPosition, setEditPosition] = useState<string>('');
+
+  // Delete commander state
+  const [deleteCommanderTarget, setDeleteCommanderTarget] = useState<Commander | null>(null);
+
+  useEffect(() => {
+    if (commanders && commanders.length > 0) {
+      setCommandersList(commanders);
+    }
+  }, [commanders]);
 
   // User management state (Admin only)
   const [appUsers, setAppUsers] = useState<AppUser[]>([]);
@@ -76,6 +114,113 @@ export const BackupSettingsView: React.FC<BackupSettingsViewProps> = ({
   useEffect(() => {
     fetchUsers();
   }, [isAdmin]);
+
+  const handleSaveCommanders = async () => {
+    if (!isAdmin) {
+      onToast('Chỉ Quản trị viên mới có quyền lưu cấu hình Ban Chỉ huy đơn vị.');
+      return;
+    }
+    try {
+      setIsSavingCommanders(true);
+      await saveCommanders(commandersList);
+      onToast('Lưu danh sách Ban Chỉ huy đơn vị thành công!');
+      onRefreshData();
+    } catch (err: any) {
+      console.error('Lỗi lưu danh sách chỉ huy:', err);
+      onToast('Lỗi lưu danh sách chỉ huy: ' + (err?.message || 'Không thể ghi vào Firestore'));
+    } finally {
+      setIsSavingCommanders(false);
+    }
+  };
+
+  const handleAddCommander = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isAdmin) {
+      onToast('Chỉ Quản trị viên mới có quyền thêm chỉ huy.');
+      return;
+    }
+    if (!newName.trim()) {
+      onToast('Vui lòng nhập họ và tên chỉ huy!');
+      return;
+    }
+    if (!newPosition.trim()) {
+      onToast('Vui lòng nhập chức vụ chỉ huy!');
+      return;
+    }
+
+    const newCmd: Commander = {
+      id: 'cmd-' + Date.now(),
+      order: commandersList.length + 1,
+      rank: newRank.trim(),
+      fullName: newName.trim(),
+      position: newPosition.trim(),
+    };
+
+    setCommandersList((prev) => [...prev, newCmd]);
+    setNewName('');
+    onToast('Đã thêm đồng chí vào danh sách tạm! Nhấn "Lưu danh sách chỉ huy" để cập nhật lên Firestore.');
+  };
+
+  const handleStartEdit = (cmd: Commander) => {
+    if (!isAdmin) return;
+    setEditingId(cmd.id);
+    setEditRank(cmd.rank);
+    setEditName(cmd.fullName);
+    setEditPosition(cmd.position);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingId) return;
+    if (!editName.trim() || !editPosition.trim()) {
+      onToast('Họ tên và chức vụ không được để trống!');
+      return;
+    }
+    setCommandersList((prev) =>
+      prev.map((c) =>
+        c.id === editingId
+          ? { ...c, rank: editRank.trim(), fullName: editName.trim(), position: editPosition.trim() }
+          : c
+      )
+    );
+    setEditingId(null);
+    onToast('Đã sửa thông tin! Nhấn "Lưu danh sách chỉ huy" để cập nhật lên Firestore.');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+  };
+
+  const handleConfirmDeleteCommander = () => {
+    if (!deleteCommanderTarget) return;
+    setCommandersList((prev) => {
+      const filtered = prev.filter((c) => c.id !== deleteCommanderTarget.id);
+      return filtered.map((c, idx) => ({ ...c, order: idx + 1 }));
+    });
+    onToast(`Đã xóa ${deleteCommanderTarget.rank} ${deleteCommanderTarget.fullName}. Nhấn "Lưu danh sách chỉ huy" để hoàn tất.`);
+    setDeleteCommanderTarget(null);
+  };
+
+  const handleMoveCommanderUp = (index: number) => {
+    if (!isAdmin || index === 0) return;
+    setCommandersList((prev) => {
+      const next = [...prev];
+      const temp = next[index - 1];
+      next[index - 1] = next[index];
+      next[index] = temp;
+      return next.map((c, idx) => ({ ...c, order: idx + 1 }));
+    });
+  };
+
+  const handleMoveCommanderDown = (index: number) => {
+    if (!isAdmin || index >= commandersList.length - 1) return;
+    setCommandersList((prev) => {
+      const next = [...prev];
+      const temp = next[index + 1];
+      next[index + 1] = next[index];
+      next[index] = temp;
+      return next.map((c, idx) => ({ ...c, order: idx + 1 }));
+    });
+  };
 
   const handleExportJson = () => {
     if (!isAdmin) {
@@ -440,6 +585,294 @@ export const BackupSettingsView: React.FC<BackupSettingsViewProps> = ({
             </form>
           </div>
 
+          {/* QUẢN LÝ BAN CHỈ HUY ĐƠN VỊ */}
+          <div className="bg-white rounded-xl p-6 shadow-xs border border-slate-200 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-2">
+              <div className="flex items-center space-x-2 text-emerald-900">
+                <Award className="w-5 h-5 text-emerald-700" />
+                <div>
+                  <h3 className="font-bold text-base text-emerald-950 uppercase tracking-wide">
+                    QUẢN LÝ BAN CHỈ HUY ĐƠN VỊ
+                  </h3>
+                  <p className="text-[11px] text-slate-500 font-normal">
+                    Tùy chỉnh thông tin Ban Chỉ huy để áp dụng trong đi phép, tranh thủ và báo cáo đơn vị
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 self-start sm:self-auto">
+                {!isAdmin && (
+                  <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded border border-slate-200">
+                    Chỉ Quản trị viên
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={handleSaveCommanders}
+                  disabled={isProcessing || isSavingCommanders || !isAdmin}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs ${
+                    isAdmin
+                      ? 'bg-emerald-700 hover:bg-emerald-600 text-white cursor-pointer active:scale-95'
+                      : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                  } disabled:opacity-50`}
+                >
+                  {isSavingCommanders ? (
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Save className="w-3.5 h-3.5 text-amber-300" />
+                  )}
+                  <span>{isSavingCommanders ? 'Đang lưu...' : 'Lưu danh sách chỉ huy'}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Table */}
+            <div className="overflow-x-auto border border-slate-200 rounded-xl">
+              <table className="w-full text-xs text-left">
+                <thead className="bg-slate-100 text-slate-700 uppercase font-bold border-b border-slate-200">
+                  <tr>
+                    <th className="py-2.5 px-3 text-center w-12">STT</th>
+                    <th className="py-2.5 px-3 w-28">Cấp bậc</th>
+                    <th className="py-2.5 px-3 min-w-[140px]">Họ và tên</th>
+                    <th className="py-2.5 px-3 min-w-[150px]">Chức vụ</th>
+                    <th className="py-2.5 px-3 text-right min-w-[130px]">Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-medium">
+                  {commandersList.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="text-center py-6 text-slate-500 italic">
+                        Chưa có cán bộ nào trong danh sách. Vui lòng thêm chỉ huy bên dưới.
+                      </td>
+                    </tr>
+                  ) : (
+                    commandersList.map((cmd, idx) => {
+                      const isEditingThis = editingId === cmd.id;
+                      return (
+                        <tr key={cmd.id} className="hover:bg-slate-50 transition-colors">
+                          <td className="py-2.5 px-3 text-center font-bold text-slate-500">
+                            {idx + 1}
+                          </td>
+                          <td className="py-2.5 px-3">
+                            {isEditingThis ? (
+                              <select
+                                value={editRank}
+                                onChange={(e) => setEditRank(e.target.value)}
+                                className="w-full bg-white border border-slate-300 rounded px-1.5 py-1 text-xs font-semibold text-slate-800"
+                              >
+                                {[
+                                  'Đại tá',
+                                  'Thượng tá',
+                                  'Trung tá',
+                                  'Thiếu tá',
+                                  'Đại úy',
+                                  'Thượng úy',
+                                  'Trung úy',
+                                  'Thiếu úy',
+                                  'Thượng tá QNCN',
+                                  'Trung tá QNCN',
+                                  'Thiếu tá QNCN',
+                                  'Đại úy QNCN',
+                                  'Thượng úy QNCN',
+                                ].map((r) => (
+                                  <option key={r} value={r}>
+                                    {r}
+                                  </option>
+                                ))}
+                              </select>
+                            ) : (
+                              <span className="font-semibold text-emerald-900 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-[11px]">
+                                {cmd.rank}
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-2.5 px-3">
+                            {isEditingThis ? (
+                              <input
+                                type="text"
+                                value={editName}
+                                onChange={(e) => setEditName(e.target.value)}
+                                className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs font-bold text-slate-900"
+                                placeholder="Nhập họ và tên..."
+                              />
+                            ) : (
+                              <span className="font-bold text-slate-900">{cmd.fullName}</span>
+                            )}
+                          </td>
+                          <td className="py-2.5 px-3">
+                            {isEditingThis ? (
+                              <input
+                                type="text"
+                                value={editPosition}
+                                onChange={(e) => setEditPosition(e.target.value)}
+                                list="positions-suggestions"
+                                className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-xs text-slate-800"
+                                placeholder="Nhập chức vụ..."
+                              />
+                            ) : (
+                              <span className="text-slate-700 font-medium">{cmd.position}</span>
+                            )}
+                          </td>
+                          <td className="py-2.5 px-3 text-right">
+                            {isEditingThis ? (
+                              <div className="flex items-center justify-end space-x-1">
+                                <button
+                                  type="button"
+                                  onClick={handleSaveEdit}
+                                  title="Lưu chỉnh sửa"
+                                  className="p-1 text-emerald-700 hover:bg-emerald-50 rounded cursor-pointer"
+                                >
+                                  <Check className="w-4 h-4" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={handleCancelEdit}
+                                  title="Hủy"
+                                  className="p-1 text-slate-500 hover:bg-slate-100 rounded cursor-pointer"
+                                >
+                                  <X className="w-4 h-4" />
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center justify-end space-x-0.5">
+                                <button
+                                  type="button"
+                                  disabled={!isAdmin || idx === 0}
+                                  onClick={() => handleMoveCommanderUp(idx)}
+                                  title="Di chuyển lên"
+                                  className="p-1 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded disabled:opacity-30 disabled:hover:bg-transparent cursor-pointer disabled:cursor-not-allowed"
+                                >
+                                  <ArrowUp className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={!isAdmin || idx === commandersList.length - 1}
+                                  onClick={() => handleMoveCommanderDown(idx)}
+                                  title="Di chuyển xuống"
+                                  className="p-1 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded disabled:opacity-30 disabled:hover:bg-transparent cursor-pointer disabled:cursor-not-allowed"
+                                >
+                                  <ArrowDown className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={!isAdmin}
+                                  onClick={() => handleStartEdit(cmd)}
+                                  title="Sửa thông tin"
+                                  className="p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded disabled:opacity-30 disabled:hover:bg-transparent cursor-pointer disabled:cursor-not-allowed"
+                                >
+                                  <Edit2 className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={!isAdmin}
+                                  onClick={() => setDeleteCommanderTarget(cmd)}
+                                  title="Xóa chỉ huy"
+                                  className="p-1 text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded disabled:opacity-30 disabled:hover:bg-transparent cursor-pointer disabled:cursor-not-allowed"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Form Thêm chỉ huy (Admin only) */}
+            {isAdmin ? (
+              <form onSubmit={handleAddCommander} className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2.5">
+                <div className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                  <Plus className="w-3.5 h-3.5 text-emerald-700" />
+                  <span>Thêm chỉ huy vào danh sách</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Cấp bậc:</label>
+                    <select
+                      value={newRank}
+                      onChange={(e) => setNewRank(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-lg p-1.5 text-xs font-medium"
+                    >
+                      {[
+                        'Đại tá',
+                        'Thượng tá',
+                        'Trung tá',
+                        'Thiếu tá',
+                        'Đại úy',
+                        'Thượng úy',
+                        'Trung úy',
+                        'Thiếu úy',
+                        'Thượng tá QNCN',
+                        'Trung tá QNCN',
+                        'Thiếu tá QNCN',
+                        'Đại úy QNCN',
+                        'Thượng úy QNCN',
+                      ].map((r) => (
+                        <option key={r} value={r}>
+                          {r}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Họ và tên:</label>
+                    <input
+                      type="text"
+                      value={newName}
+                      onChange={(e) => setNewName(e.target.value)}
+                      placeholder="VD: Võ Thanh Vàng"
+                      className="w-full bg-white border border-slate-300 rounded-lg p-1.5 text-xs font-medium"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Chức vụ (tùy ý):</label>
+                    <input
+                      type="text"
+                      value={newPosition}
+                      onChange={(e) => setNewPosition(e.target.value)}
+                      list="positions-suggestions"
+                      placeholder="VD: Đồn trưởng..."
+                      className="w-full bg-white border border-slate-300 rounded-lg p-1.5 text-xs font-medium"
+                      required
+                    />
+                    <datalist id="positions-suggestions">
+                      <option value="Đồn trưởng" />
+                      <option value="Chính trị viên" />
+                      <option value="Phó Đồn trưởng" />
+                      <option value="Phó Đồn trưởng QS" />
+                      <option value="Phó Đồn trưởng NV" />
+                      <option value="Chính trị viên phó" />
+                      <option value="Đội trưởng Đội Vũ trang" />
+                      <option value="Đội trưởng Đội Trinh sát" />
+                      <option value="Trạm trưởng Trạm KSBĐ" />
+                    </datalist>
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-1">
+                  <button
+                    type="submit"
+                    className="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-800 hover:bg-emerald-700 active:scale-95 text-white flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5 text-amber-300" />
+                    <span>Thêm vào danh sách</span>
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-[11px] text-slate-500 text-center">
+                Chỉ tài khoản Quản trị viên (Admin) mới có quyền thêm, sửa, xóa và lưu thông tin Ban Chỉ huy đơn vị.
+              </div>
+            )}
+          </div>
+
           {/* Reset / Clear Data */}
           <div className="bg-white rounded-xl p-5 shadow-xs border border-slate-200">
             <h4 className="font-bold text-sm text-slate-800 mb-2 flex items-center justify-between">
@@ -684,6 +1117,39 @@ export const BackupSettingsView: React.FC<BackupSettingsViewProps> = ({
           </div>
         </div>
       )}
+
+      {/* Confirmation Modal: Delete Commander */}
+      {deleteCommanderTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="bg-white rounded-xl max-w-sm w-full p-5 space-y-4 border border-rose-300 shadow-xl">
+            <div className="flex items-center space-x-2 text-rose-600 font-bold">
+              <AlertTriangle className="w-5 h-5" />
+              <span>Xác nhận xóa chỉ huy?</span>
+            </div>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Bạn có chắc chắn muốn xóa đồng chí <strong>{deleteCommanderTarget.rank} {deleteCommanderTarget.fullName}</strong> ({deleteCommanderTarget.position}) khỏi danh sách Ban Chỉ huy đơn vị?
+            </p>
+            <div className="flex justify-end space-x-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setDeleteCommanderTarget(null)}
+                className="px-3 py-1.5 rounded text-xs font-semibold bg-slate-100 hover:bg-slate-200 cursor-pointer"
+              >
+                Hủy bỏ
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDeleteCommander}
+                className="px-3 py-1.5 rounded text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white flex items-center gap-1 cursor-pointer"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Xác nhận xóa</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+

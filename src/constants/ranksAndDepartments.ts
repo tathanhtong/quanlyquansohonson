@@ -1,4 +1,4 @@
-import { Commendation, DepartmentName, MilitaryRank, MonthlyReportEvaluation, Reprimand, Reward, Soldier } from '../types';
+import { Commander, Commendation, DepartmentName, MilitaryRank, MonthlyReportEvaluation, Reprimand, Reward, Soldier } from '../types';
 
 export const MILITARY_RANKS: { category: string; ranks: MilitaryRank[] }[] = [
   {
@@ -712,4 +712,43 @@ export const INITIAL_LEAVES = [
     createdAt: '2026-09-11T10:00:00Z',
   },
 ];
+
+export const DEFAULT_COMMANDERS: Commander[] = [
+  {
+    id: 'cmd-1',
+    order: 1,
+    rank: 'Trung tá',
+    fullName: 'Võ Thanh Vàng',
+    position: 'Đồn trưởng',
+  },
+  {
+    id: 'cmd-2',
+    order: 2,
+    rank: 'Trung tá',
+    fullName: 'Nguyễn Nguyên Bá',
+    position: 'Chính trị viên',
+  },
+  {
+    id: 'cmd-3',
+    order: 3,
+    rank: 'Trung tá',
+    fullName: 'Lâm Anh Đoàn',
+    position: 'Phó Đồn trưởng QS',
+  },
+  {
+    id: 'cmd-4',
+    order: 4,
+    rank: 'Trung tá',
+    fullName: 'Trần Văn Diện',
+    position: 'Phó Đồn trưởng NV',
+  },
+  {
+    id: 'cmd-5',
+    order: 5,
+    rank: 'Đại úy',
+    fullName: 'Lê Thanh Nhàn',
+    position: 'Chính trị viên phó',
+  },
+];
+
 

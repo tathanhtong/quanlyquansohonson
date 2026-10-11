@@ -11,6 +11,7 @@ import {
   writeBatch,
 } from 'firebase/firestore';
 import {
+  DEFAULT_COMMANDERS,
   INITIAL_COMMENDATIONS,
   INITIAL_EVALUATION,
   INITIAL_LEAVES,
@@ -22,6 +23,7 @@ import {
   AppDatabase,
   AppUser,
   AuditLog,
+  Commander,
   Commendation,
   DepartmentName,
   DutyStatus,
@@ -78,6 +80,7 @@ export function getEmptyDatabase(): AppDatabase {
     evaluations: [],
     auditLogs: [],
     unitInfo: DEFAULT_UNIT_INFO,
+    commanders: DEFAULT_COMMANDERS,
   };
 }
 
@@ -101,6 +104,7 @@ export function getSampleDatabase(): AppDatabase {
       },
     ],
     unitInfo: DEFAULT_UNIT_INFO,
+    commanders: DEFAULT_COMMANDERS,
   };
 }
 
@@ -451,6 +455,7 @@ export async function fetchAllFromFirestore(): Promise<AppDatabase | null> {
       evalsSnap,
       logsSnap,
       unitInfoSnap,
+      commandersSnap,
     ] = await Promise.all([
       getDocs(collection(firestoreDb, 'soldiers')),
       getDocs(collection(firestoreDb, 'commendations')),
@@ -460,6 +465,7 @@ export async function fetchAllFromFirestore(): Promise<AppDatabase | null> {
       getDocs(collection(firestoreDb, 'evaluations')),
       getDocs(collection(firestoreDb, 'auditLogs')),
       getDoc(doc(firestoreDb, 'settings', 'unitInfo')),
+      getDoc(doc(firestoreDb, 'settings', 'commanders')),
     ]);
 
     const soldiers: Soldier[] = [];
@@ -493,6 +499,16 @@ export async function fetchAllFromFirestore(): Promise<AppDatabase | null> {
       ? (unitInfoSnap.data() as typeof DEFAULT_UNIT_INFO)
       : memoryDb.unitInfo || DEFAULT_UNIT_INFO;
 
+    let commanders: Commander[] = DEFAULT_COMMANDERS;
+    if (commandersSnap.exists()) {
+      const cData = commandersSnap.data();
+      if (Array.isArray(cData?.commanders) && cData.commanders.length > 0) {
+        commanders = [...cData.commanders].sort((a, b) => (a.order || 0) - (b.order || 0));
+      }
+    } else if (memoryDb.commanders && memoryDb.commanders.length > 0) {
+      commanders = memoryDb.commanders;
+    }
+
     const firestoreDbData: AppDatabase = {
       soldiers,
       commendations,
@@ -502,6 +518,7 @@ export async function fetchAllFromFirestore(): Promise<AppDatabase | null> {
       evaluations,
       auditLogs,
       unitInfo,
+      commanders,
     };
 
     saveToLocalCache(firestoreDbData);
@@ -619,6 +636,24 @@ export function setupRealtimeListeners(onUpdate?: (db: AppDatabase) => void): ()
     (err) => console.warn('Realtime unitInfo err:', err)
   );
 
+  const unsubCommanders = onSnapshot(
+    doc(firestoreDb, 'settings', 'commanders'),
+    (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        if (Array.isArray(data?.commanders)) {
+          const sorted = [...data.commanders].sort(
+            (a: Commander, b: Commander) => (a.order || 0) - (b.order || 0)
+          );
+          memoryDb.commanders = sorted;
+          saveToLocalCache(memoryDb);
+          if (onUpdate) onUpdate(memoryDb);
+        }
+      }
+    },
+    (err) => console.warn('Realtime commanders err:', err)
+  );
+
   activeRealtimeUnsubscribes = [
     unsubSoldiers,
     unsubComms,
@@ -627,6 +662,7 @@ export function setupRealtimeListeners(onUpdate?: (db: AppDatabase) => void): ()
     unsubLeaves,
     unsubEvals,
     unsubUnit,
+    unsubCommanders,
   ];
 
   return () => {
@@ -1615,6 +1651,46 @@ export async function updateUnitInfo(unitInfo: typeof DEFAULT_UNIT_INFO): Promis
   }
 }
 
+export function getCommanders(): Commander[] {
+  if (memoryDb.commanders && memoryDb.commanders.length > 0) {
+    return memoryDb.commanders;
+  }
+  return DEFAULT_COMMANDERS;
+}
+
+export async function saveCommanders(commanders: Commander[]): Promise<void> {
+  checkUserPermission('admin');
+  setSyncStatus('SAVING');
+  try {
+    const ordered = commanders.map((c, idx) => ({
+      ...c,
+      order: idx + 1,
+    }));
+    memoryDb.commanders = ordered;
+    saveToLocalCache(memoryDb);
+
+    if (auth.currentUser) {
+      await safeSetDoc(doc(firestoreDb, 'settings', 'commanders'), {
+        commanders: ordered,
+        updatedAt: new Date().toISOString(),
+        updatedByUid: auth.currentUser.uid,
+        updatedByName: auth.currentUser.displayName || auth.currentUser.email || 'Admin',
+      });
+    }
+
+    await addAuditLog(
+      'SỬA',
+      'Cài đặt',
+      `Cập nhật danh sách Ban Chỉ huy đơn vị (${ordered.length} đồng chí)`
+    );
+    setSyncStatus('SAVED');
+  } catch (err) {
+    console.error('saveCommanders failed:', err);
+    setSyncStatus('ERROR');
+    throw err;
+  }
+}
+
 // -------------------------------------------------------------
 // BACKUP, RESTORE & SYSTEM CLEAR
 // -------------------------------------------------------------
@@ -1727,6 +1803,10 @@ export async function restoreDatabaseFromJson(
       })),
       auditLogs: memoryDb.auditLogs || [],
       unitInfo: parsed.unitInfo || memoryDb.unitInfo || DEFAULT_UNIT_INFO,
+      commanders:
+        parsed.commanders && Array.isArray(parsed.commanders) && parsed.commanders.length > 0
+          ? parsed.commanders
+          : memoryDb.commanders || DEFAULT_COMMANDERS,
     };
 
     // 1. Truly clear old documents from business collections in Firestore
@@ -1740,8 +1820,15 @@ export async function restoreDatabaseFromJson(
     await batchWriteCollection('leaves', validatedDb.leaves);
     await batchWriteCollection('evaluations', validatedDb.evaluations);
 
-    // 3. Update unitInfo & mark system as initialized in Firestore
+    // 3. Update unitInfo, commanders & mark system as initialized in Firestore
     await setDoc(doc(firestoreDb, 'settings', 'unitInfo'), validatedDb.unitInfo);
+    if (validatedDb.commanders && validatedDb.commanders.length > 0) {
+      await setDoc(doc(firestoreDb, 'settings', 'commanders'), {
+        commanders: validatedDb.commanders,
+        updatedAt: new Date().toISOString(),
+        restoredBy: auth.currentUser?.email || 'admin',
+      });
+    }
     await setDoc(doc(firestoreDb, 'settings', 'systemStatus'), {
       isInitialized: true,
       lastRestoredAt: new Date().toISOString(),
@@ -1795,6 +1882,11 @@ export async function resetToSampleData(): Promise<void> {
     );
 
     await setDoc(doc(firestoreDb, 'settings', 'unitInfo'), sampleDb.unitInfo);
+    await setDoc(doc(firestoreDb, 'settings', 'commanders'), {
+      commanders: DEFAULT_COMMANDERS,
+      updatedAt: new Date().toISOString(),
+      resetBy: auth.currentUser?.email || 'admin',
+    });
     await setDoc(doc(firestoreDb, 'settings', 'systemStatus'), {
       isInitialized: true,
       lastResetAt: new Date().toISOString(),
@@ -1842,6 +1934,7 @@ export async function clearAllData(): Promise<void> {
     // 5. Clear local cache
     const emptyDb = getEmptyDatabase();
     emptyDb.unitInfo = memoryDb.unitInfo || DEFAULT_UNIT_INFO;
+    emptyDb.commanders = memoryDb.commanders && memoryDb.commanders.length > 0 ? memoryDb.commanders : DEFAULT_COMMANDERS;
     emptyDb.auditLogs = memoryDb.auditLogs || [];
     saveToLocalCache(emptyDb);
     memoryDb = emptyDb;

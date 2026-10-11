@@ -973,6 +973,7 @@ export default function App() {
               month={selectedMonth}
               year={selectedYear}
               soldiers={db.soldiers}
+              commanders={db.commanders || []}
               commendations={db.commendations}
               reprimands={db.reprimands}
               rewards={db.rewards}
@@ -988,6 +989,7 @@ export default function App() {
           {currentTab === 'backup' && (
             <BackupSettingsView
               unitInfo={db.unitInfo}
+              commanders={db.commanders || []}
               currentUserProfile={currentUserProfile}
               onToast={showToast}
               onRefreshData={() => setDb(loadDatabase())}
@@ -1058,6 +1060,7 @@ export default function App() {
         <LeaveModal
           isOpen={leaveModalOpen}
           soldiers={db.soldiers}
+          commanders={db.commanders || []}
           itemToEdit={editingLeave}
           onClose={() => setLeaveModalOpen(false)}
           onSave={handleSaveLeave}

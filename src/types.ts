@@ -224,4 +224,14 @@ export interface AppDatabase {
     superiorUnit: string;
     stationLocation: string;
   };
+  commanders?: Commander[];
 }
+
+export interface Commander {
+  id: string;
+  order: number;
+  rank: MilitaryRank | string;
+  fullName: string;
+  position: string;
+}
+

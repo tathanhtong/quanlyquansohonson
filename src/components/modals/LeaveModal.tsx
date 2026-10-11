@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { X, CalendarCheck, Save, Clock, MapPin, ShieldCheck, UserCheck, AlertCircle } from 'lucide-react';
-import { LeaveCategory, LeaveRecord, LeaveStatus, LeaveType, Soldier } from '../../types';
+import { Commander, LeaveCategory, LeaveRecord, LeaveStatus, LeaveType, Soldier } from '../../types';
 import { LEAVE_CATEGORIES, LEAVE_TYPES_BY_CATEGORY } from '../../constants/ranksAndDepartments';
 
 interface LeaveModalProps {
   isOpen: boolean;
   soldiers: Soldier[];
+  commanders?: Commander[];
   itemToEdit?: LeaveRecord | null;
   onClose: () => void;
   onSave: (data: Omit<LeaveRecord, 'id' | 'createdAt'>) => void | Promise<void>;
@@ -22,19 +23,27 @@ const COMMON_REASONS = [
 const COMMON_APPROVERS = [
   'Trung tá Võ Thanh Vàng - Đồn trưởng',
   'Trung tá Nguyễn Nguyên Bá - Chính trị viên',
-  'Thrung tá Lâm Anh Đoàn - Phó Đồn trưởng QS',
-  'Thrung tá Trần Văn Diện - Phó Đồn trưởng NV',
-  'Đại uý Lê Thanh Nhàn - Chính trị viên phó',
+  'Trung tá Lâm Anh Đoàn - Phó Đồn trưởng QS',
+  'Trung tá Trần Văn Diện - Phó Đồn trưởng NV',
+  'Đại úy Lê Thanh Nhàn - Chính trị viên phó',
 ];
 
 export const LeaveModal: React.FC<LeaveModalProps> = ({
   isOpen,
   soldiers,
+  commanders,
   itemToEdit,
   onClose,
   onSave,
 }) => {
   const today = new Date().toISOString().split('T')[0];
+
+  const approverOptions = useMemo(() => {
+    if (commanders && commanders.length > 0) {
+      return commanders.map((c) => `${c.rank} ${c.fullName} - ${c.position}`);
+    }
+    return COMMON_APPROVERS;
+  }, [commanders]);
 
   const [soldierId, setSoldierId] = useState(soldiers[0]?.id || '');
   const [category, setCategory] = useState<LeaveCategory>('Đi phép');
@@ -113,13 +122,13 @@ export const LeaveModal: React.FC<LeaveModalProps> = ({
       setEndDate(endD.toISOString().split('T')[0]);
       setDestination('');
       setReason(COMMON_REASONS[0]);
-      setApprover(COMMON_APPROVERS[0]);
+      setApprover(approverOptions[0] || COMMON_APPROVERS[0]);
       setLicenseNumber(`GP-${Math.floor(10 + Math.random() * 90)}/ĐBP`);
       setStatus('Đang nghỉ');
       setActualReturnDate('');
       setNotes('');
     }
-  }, [itemToEdit, isOpen, soldiers]);
+  }, [itemToEdit, isOpen, soldiers, approverOptions]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -399,20 +408,30 @@ export const LeaveModal: React.FC<LeaveModalProps> = ({
           {/* Approver & Status */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
-                <span>Cấp / Người phê duyệt</span> <span className="text-rose-600">*</span>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1 flex items-center justify-between">
+                <span className="flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
+                  <span>Cấp / Người phê duyệt</span> <span className="text-rose-600">*</span>
+                </span>
+                {commanders && commanders.length > 0 && (
+                  <span className="text-[10px] text-emerald-700 font-semibold normal-case">
+                    (Ban Chỉ huy đơn vị)
+                  </span>
+                )}
               </label>
               <select
                 value={approver}
                 onChange={(e) => setApprover(e.target.value)}
                 className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white font-medium"
               >
-                {COMMON_APPROVERS.map((app) => (
+                {approverOptions.map((app) => (
                   <option key={app} value={app}>
                     {app}
                   </option>
                 ))}
+                {approver && !approverOptions.includes(approver) && (
+                  <option value={approver}>{approver}</option>
+                )}
               </select>
             </div>
 
