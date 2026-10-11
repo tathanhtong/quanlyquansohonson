@@ -246,7 +246,7 @@ export const MonthlyReportView: React.FC<MonthlyReportViewProps> = ({
             </div>
             <div className="w-32 h-0.5 bg-slate-900 mx-auto my-1"></div>
             <div className="text-xs italic pt-1">
-              Hòn Sơn, ngày {new Date().getDate()} tháng {new Date().getMonth() + 1} năm {new Date().getFullYear()}
+              An Giang, ngày {new Date().getDate()} tháng {new Date().getMonth() + 1} năm {new Date().getFullYear()}
             </div>
           </div>
         </div>
@@ -285,7 +285,7 @@ export const MonthlyReportView: React.FC<MonthlyReportViewProps> = ({
                   <td className="border border-slate-900 p-2 text-center font-mono">1</td>
                   <td className="border border-slate-900 p-2">Tổng quân số đơn vị quản lý</td>
                   <td className="border border-slate-900 p-2 text-center font-bold">{soldiers.length} đồng chí</td>
-                  <td className="border border-slate-900 p-2">Biên chế hiện diện</td>
+                  <td className="border border-slate-900 p-2">Biên chế hiện có</td>
                 </tr>
                 <tr>
                   <td className="border border-slate-900 p-2 text-center font-mono">2</td>
@@ -707,7 +707,7 @@ export const MonthlyReportView: React.FC<MonthlyReportViewProps> = ({
           </div>
 
           <div>
-            <div className="font-bold uppercase tracking-wide">CHÍNH TRỊ VIÊN / ĐỒN TRƯỞNG</div>
+            <div className="font-bold uppercase tracking-wide">ĐỒN TRƯỞNG</div>
             <div className="italic text-slate-500 print:text-black text-xs">(Ký, đóng dấu)</div>
             <div className="h-20"></div>
             <div className="font-bold text-slate-900 print:text-black">{evaluation.commanderName}</div>
